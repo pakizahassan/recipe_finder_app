@@ -16,6 +16,9 @@ dependencies:
   go_router: ^14.2.7
   google_fonts: ^6.1.0
   supabase_flutter: ^2.6.0
+  http: ^1.2.2
+  image_picker: ^1.1.2
+  google_generative_ai: ^0.4.7  # Added for Gemini API integration
 
 dev_dependencies:
   flutter_test:

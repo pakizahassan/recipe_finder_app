@@ -74,7 +74,7 @@ flutter doctor
 ```
 
 ## Getting Started
-
+HELLO TO MY PROJECT
 Clone or open the project, then install dependencies:
 
 ```bash
@@ -261,6 +261,29 @@ If Supabase requests fail, verify:
 - Supabase Auth email/password settings
 - Table names and column names match the expected schema
 - Row Level Security policies allow the required read/write operations
+
+## Gemini Configuration
+
+The AI Chef screen needs a Gemini API key at Flutter build/run time:
+
+```bash
+flutter run -d chrome --dart-define=GEMINI_API_KEY=your_key
+```
+
+For a release web build:
+
+```bash
+flutter build web --release --dart-define=GEMINI_API_KEY=your_key
+```
+
+On Vercel, add `GEMINI_API_KEY` as a project environment variable. The included
+`build_vercel.sh` script passes that value into Flutter during the web build.
+
+Optional model override:
+
+```bash
+flutter run -d chrome --dart-define=GEMINI_API_KEY=your_key --dart-define=GEMINI_MODEL=gemini-2.5-flash
+```
 
 If network images do not load, confirm that your device or emulator has internet access.
 
