@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 import 'dart:convert';
 import 'package:google_generative_ai/google_generative_ai.dart';
+=======
+import 'package:google_generative_ai/google_generative_ai.dart';
+
+>>>>>>> eab243aeff831e31a6572de34aab6cbdd5487cf1
 import 'ai_config.dart';
 
 class GeminiRecipeService {
@@ -8,12 +13,17 @@ class GeminiRecipeService {
     GenerativeModel? model,
   }) : _model = model ??
             GenerativeModel(
+<<<<<<< HEAD
               model: AiConfig.model,
+=======
+              model: 'gemini-2.5-flash',
+>>>>>>> eab243aeff831e31a6572de34aab6cbdd5487cf1
               apiKey: apiKey ?? AiConfig.geminiApiKey,
             );
 
   final GenerativeModel _model;
 
+<<<<<<< HEAD
   // Used by RecipeTestScreen — takes ingredients, returns plain text
   Future<String> generateRecipe(List<String> ingredients) async {
     final cleaned = ingredients
@@ -22,19 +32,37 @@ class GeminiRecipeService {
         .toList();
 
     if (cleaned.isEmpty) {
+=======
+  Future<String> generateRecipe(List<String> ingredients) async {
+    final cleanedIngredients = ingredients
+        .map((ingredient) => ingredient.trim())
+        .where((ingredient) => ingredient.isNotEmpty)
+        .toList();
+
+    if (cleanedIngredients.isEmpty) {
+>>>>>>> eab243aeff831e31a6572de34aab6cbdd5487cf1
       throw ArgumentError('At least one ingredient is required.');
     }
 
     final prompt = '''
 Create a practical recipe using these ingredients:
+<<<<<<< HEAD
 ${cleaned.map((i) => '- $i').join('\n')}
+=======
+${cleanedIngredients.map((ingredient) => '- $ingredient').join('\n')}
+>>>>>>> eab243aeff831e31a6572de34aab6cbdd5487cf1
 
 Return a clear recipe with:
 - Recipe title
 - Short description
 - Ingredients with quantities
 - Step-by-step instructions
+<<<<<<< HEAD
 - Cooking time and servings
+=======
+- Cooking time
+- Servings
+>>>>>>> eab243aeff831e31a6572de34aab6cbdd5487cf1
 - One helpful chef tip
 ''';
 
@@ -44,6 +72,7 @@ Return a clear recipe with:
     if (text == null || text.isEmpty) {
       throw StateError('Gemini returned an empty recipe response.');
     }
+<<<<<<< HEAD
     return text;
   }
 
@@ -102,3 +131,9 @@ You MUST return ONLY valid JSON. No markdown, no code fences, no explanation.
     return s;
   }
 }
+=======
+
+    return text;
+  }
+}
+>>>>>>> eab243aeff831e31a6572de34aab6cbdd5487cf1
