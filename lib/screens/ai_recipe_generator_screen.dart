@@ -314,7 +314,7 @@ class _ErrorView extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            'Tip: Start Flutter with --dart-define=GEMINI_API_KEY=your_key.',
+            'Tip: Start Flutter with --dart-define-from-file=config.json.',
             textAlign: TextAlign.center,
             style: GoogleFonts.poppins(
               fontSize: 11,

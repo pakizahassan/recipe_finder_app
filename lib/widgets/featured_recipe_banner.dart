@@ -31,7 +31,7 @@ class FeaturedRecipeBanner extends StatelessWidget {
           borderRadius: BorderRadius.circular(AppRadii.lg),
           boxShadow: [
             BoxShadow(
-              color: AppColors.primary.withOpacity(0.18),
+              color: AppColors.primary.withValues(alpha: 0.18),
               blurRadius: 24,
               offset: const Offset(0, 12),
             ),
@@ -52,9 +52,9 @@ class FeaturedRecipeBanner extends StatelessWidget {
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      Colors.black.withOpacity(0.08),
-                      Colors.black.withOpacity(0.12),
-                      Colors.black.withOpacity(0.76),
+                      Colors.black.withValues(alpha: 0.08),
+                      Colors.black.withValues(alpha: 0.12),
+                      Colors.black.withValues(alpha: 0.76),
                     ],
                   ),
                 ),
@@ -177,7 +177,7 @@ class _MetaChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.18),
+        color: Colors.white.withValues(alpha: 0.18),
         borderRadius: BorderRadius.circular(AppRadii.sm),
         border: Border.all(color: Colors.white24),
       ),

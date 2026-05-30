@@ -47,7 +47,7 @@ class _RecipeTestScreenState extends State<RecipeTestScreen> {
       setState(() {
         _recipe = null;
         _errorMessage =
-            'Missing GEMINI_API_KEY. Start Flutter with --dart-define=GEMINI_API_KEY=your_key.';
+            'Missing GEMINI_API_KEY. Start Flutter with --dart-define-from-file=config.json.';
       });
       return;
     }

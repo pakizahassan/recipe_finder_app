@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:recipe_finder_app/entities/user_profile.dart';
 import 'package:recipe_finder_app/theme/app_theme.dart';
 import 'package:recipe_finder_app/widgets/user_avatar.dart';
 import 'package:recipe_finder_app/providers/profile_providers.dart';
@@ -15,8 +16,8 @@ class EditProfileScreen extends ConsumerStatefulWidget {
 
 class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   final _formKey = GlobalKey<FormState>();
-  late final TextEditingController _nameCtrl;
-  late final TextEditingController _bioCtrl;
+  final _nameCtrl = TextEditingController();
+  final _bioCtrl = TextEditingController();
   bool _initialized = false;
 
   @override
@@ -26,10 +27,10 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     super.dispose();
   }
 
-  void _initControllers(profile) {
-    if (_initialized) return;
-    _nameCtrl = TextEditingController(text: profile?.displayName ?? '');
-    _bioCtrl = TextEditingController(text: profile?.bio ?? '');
+  void _initControllers(UserProfile? profile) {
+    if (_initialized || profile == null) return;
+    _nameCtrl.text = profile.displayName;
+    _bioCtrl.text = profile.bio;
     _initialized = true;
   }
 

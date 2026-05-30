@@ -8,7 +8,7 @@ class GeminiRecipeService {
     GenerativeModel? model,
   }) : _model = model ??
             GenerativeModel(
-              model: 'gemini-2.5-flash',
+              model: AiConfig.model,
               apiKey: apiKey ?? AiConfig.geminiApiKey,
             );
 

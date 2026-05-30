@@ -14,6 +14,10 @@ class AiConfig {
   Flutter reads this file at run/build time with:
   --dart-define-from-file=config.json
 
+  If Flutter Web keeps using an old API key or model after config.json changes,
+  run `flutter clean` before launching again; the browser can cache a build that
+  was compiled with stale environment values.
+
   On Flutter Web, these values are compiled into the app bundle. Do not put
   server-only secrets here; restrict API keys in the provider console and use
   a backend proxy for secrets that must never be exposed to browsers.
