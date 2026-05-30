@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -18,6 +20,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   late final AnimationController _anim;
   late final Animation<double> _fade;
 
+  Timer? _timer;
+
   @override
   void initState() {
     super.initState();
@@ -25,20 +29,20 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
         vsync: this, duration: const Duration(milliseconds: 600));
     _fade = CurvedAnimation(parent: _anim, curve: Curves.easeOut);
     _anim.forward();
-    _navigate();
+
+    // Avoid test flakiness: explicitly cancel pending navigation work.
+    _timer = Timer(const Duration(milliseconds: 1200), () {
+      if (!mounted) return;
+      final user = ref.read(currentUserProvider).valueOrNull;
+      context.go(user != null ? '/app' : '/onboarding');
+    });
   }
 
   @override
   void dispose() {
+    _timer?.cancel();
     _anim.dispose();
     super.dispose();
-  }
-
-  Future<void> _navigate() async {
-    await Future.delayed(const Duration(milliseconds: 1200));
-    if (!mounted) return;
-    final user = ref.read(currentUserProvider).valueOrNull;
-    context.go(user != null ? '/app' : '/onboarding');
   }
 
   @override
