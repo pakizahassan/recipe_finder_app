@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:recipe_finder_app/theme/app_theme.dart';
@@ -13,6 +14,10 @@ class AiRecipeResultView extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        if (recipe.imageUrl != null) ...[
+          _RecipeImageBanner(imageUrl: recipe.imageUrl!),
+          const SizedBox(height: 12),
+        ],
         _TitleCard(recipe: recipe),
         const SizedBox(height: 12),
         _StatsRow(recipe: recipe),
@@ -34,6 +39,37 @@ class AiRecipeResultView extends StatelessWidget {
         ],
         const SizedBox(height: 24),
       ],
+    );
+  }
+}
+
+// ── Image banner ──────────────────────────────────────────────────────────────
+
+class _RecipeImageBanner extends StatelessWidget {
+  const _RecipeImageBanner({required this.imageUrl});
+  final String imageUrl;
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(AppRadii.lg),
+      child: CachedNetworkImage(
+        imageUrl: imageUrl,
+        height: 200,
+        width: double.infinity,
+        fit: BoxFit.cover,
+        placeholder: (_, __) => Container(
+          height: 200,
+          color: AppColors.primarySoft,
+          child: const Center(
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              color: AppColors.primary,
+            ),
+          ),
+        ),
+        errorWidget: (_, __, ___) => const SizedBox.shrink(),
+      ),
     );
   }
 }

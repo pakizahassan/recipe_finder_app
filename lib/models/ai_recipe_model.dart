@@ -10,6 +10,7 @@ class AiRecipeModel extends AiRecipe {
     required super.calories,
     required super.servings,
     required super.chefTips,
+    super.imageUrl,
   });
 
   factory AiRecipeModel.fromJson(Map<String, dynamic> json) {
@@ -22,8 +23,21 @@ class AiRecipeModel extends AiRecipe {
       calories: _str(json['calories']) ?? '',
       servings: _str(json['servings']) ?? '',
       chefTips: _str(json['chef_tips']) ?? '',
+      imageUrl: _str(json['image_url']),
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        'title': title,
+        'description': description,
+        'ingredients': ingredients,
+        'steps': steps,
+        'cooking_time': cookingTime,
+        'calories': calories,
+        'servings': servings,
+        'chef_tips': chefTips,
+        if (imageUrl != null) 'image_url': imageUrl,
+      };
 
   static String? _str(dynamic v) => v is String ? v : null;
 

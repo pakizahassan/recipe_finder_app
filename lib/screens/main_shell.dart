@@ -25,7 +25,14 @@ class MainShell extends ConsumerWidget {
 
     return Scaffold(
       body: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 220),
+        duration: const Duration(milliseconds: 250),
+        transitionBuilder: (child, animation) => FadeTransition(
+          opacity: CurvedAnimation(
+            parent: animation,
+            curve: Curves.easeOutCubic,
+          ),
+          child: child,
+        ),
         child: KeyedSubtree(
           key: ValueKey(selectedIndex),
           child: tabs[selectedIndex],
@@ -44,6 +51,7 @@ class MainShell extends ConsumerWidget {
         ),
         child: NavigationBar(
           selectedIndex: selectedIndex,
+          animationDuration: const Duration(milliseconds: 300),
           onDestinationSelected: (index) =>
               ref.read(shellTabProvider.notifier).state = index,
           destinations: const [

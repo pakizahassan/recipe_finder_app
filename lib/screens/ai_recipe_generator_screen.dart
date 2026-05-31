@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:recipe_finder_app/theme/app_theme.dart';
 import 'package:recipe_finder_app/providers/ai_recipe_providers.dart';
 import 'package:recipe_finder_app/widgets/ai_recipe_result_view.dart';
+import 'package:recipe_finder_app/ai/ai_config.dart';
 
 class AiRecipeGeneratorScreen extends ConsumerStatefulWidget {
   const AiRecipeGeneratorScreen({super.key});
@@ -27,8 +28,10 @@ class _AiRecipeGeneratorScreenState
 
   void _generate() {
     final name = _controller.text.trim();
+    final messenger = ScaffoldMessenger.of(context);
+
     if (name.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger.showSnackBar(
         SnackBar(
           content: Text(
             'Please enter a food name first.',
@@ -42,6 +45,7 @@ class _AiRecipeGeneratorScreenState
       );
       return;
     }
+
     _focusNode.unfocus();
     ref.read(aiRecipeProvider.notifier).generate(name);
   }
@@ -147,6 +151,57 @@ class _InputSection extends StatelessWidget {
   final bool isLoading;
   final VoidCallback onGenerate;
 
+  static const List<String> _dishSuggestions = [
+    'Chicken Biryani',
+    'Mutton Biryani',
+    'Vegetable Biryani',
+    'Hyderabadi Biryani',
+    'Pasta Carbonara',
+    'Chicken Alfredo Pasta',
+    'Arrabbiata Pasta',
+    'Beef Tacos',
+    'Chicken Tacos',
+    'Fish Tacos',
+    'Butter Chicken',
+    'Chicken Curry',
+    'Paneer Curry',
+    'Masala Dosa',
+    'Chocolate Pancakes',
+    'Banana Pancakes',
+    'Chicken Fried Rice',
+    'Vegetable Fried Rice',
+  ];
+
+  List<String> _suggestionsFor(String input) {
+    final query = input.trim().toLowerCase();
+    if (query.isEmpty) {
+      return const [];
+    }
+
+    final queryWords =
+        query.split(RegExp(r'\s+')).where((word) => word.isNotEmpty).toList();
+
+    return _dishSuggestions
+        .where((dish) {
+          final lowerDish = dish.toLowerCase();
+          if (lowerDish == query) {
+            return false;
+          }
+          return lowerDish.contains(query) ||
+              queryWords.any((word) => lowerDish.contains(word));
+        })
+        .take(5)
+        .toList(growable: false);
+  }
+
+  void _useSuggestion(String suggestion) {
+    controller.value = TextEditingValue(
+      text: suggestion,
+      selection: TextSelection.collapsed(offset: suggestion.length),
+    );
+    focusNode.requestFocus();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -196,7 +251,31 @@ class _InputSection extends StatelessWidget {
                   color: AppColors.textMuted, size: 20),
             ),
           ),
-          const SizedBox(height: 14),
+          ValueListenableBuilder<TextEditingValue>(
+            valueListenable: controller,
+            builder: (context, value, _) {
+              final suggestions = _suggestionsFor(value.text);
+              if (suggestions.isEmpty) {
+                return const SizedBox(height: 14);
+              }
+
+              return Padding(
+                padding: const EdgeInsets.only(top: 10, bottom: 14),
+                child: Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    for (final suggestion in suggestions)
+                      _SuggestionButton(
+                        label: suggestion,
+                        enabled: !isLoading,
+                        onTap: () => _useSuggestion(suggestion),
+                      ),
+                  ],
+                ),
+              );
+            },
+          ),
           FilledButton.icon(
             onPressed: isLoading ? null : onGenerate,
             icon: isLoading
@@ -314,7 +393,7 @@ class _ErrorView extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            'Tip: Start Flutter with --dart-define=GEMINI_API_KEY=your_key.',
+            AiConfig.missingApiKeyMessage,
             textAlign: TextAlign.center,
             style: GoogleFonts.poppins(
               fontSize: 11,
@@ -409,6 +488,39 @@ class _SuggestionChip extends StatelessWidget {
           fontWeight: FontWeight.w600,
           color: AppColors.textSecondary,
         ),
+      ),
+    );
+  }
+}
+
+class _SuggestionButton extends StatelessWidget {
+  const _SuggestionButton({
+    required this.label,
+    required this.enabled,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool enabled;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return ActionChip(
+      label: Text(label),
+      avatar: const Icon(Icons.auto_awesome_rounded, size: 15),
+      onPressed: enabled ? onTap : null,
+      backgroundColor: AppColors.primarySoft,
+      disabledColor: AppColors.surfaceAlt,
+      side: const BorderSide(color: AppColors.border),
+      labelStyle: GoogleFonts.poppins(
+        fontSize: 12,
+        fontWeight: FontWeight.w700,
+        color: enabled ? AppColors.primaryDark : AppColors.textMuted,
+      ),
+      visualDensity: VisualDensity.compact,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18),
       ),
     );
   }

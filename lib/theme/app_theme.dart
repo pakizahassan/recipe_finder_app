@@ -97,7 +97,7 @@ class AppTheme {
         style: FilledButton.styleFrom(
           backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
-          disabledBackgroundColor: AppColors.primary.withOpacity(0.45),
+          disabledBackgroundColor: AppColors.primary.withValues(alpha: 0.45),
           disabledForegroundColor: Colors.white,
           minimumSize: const Size.fromHeight(52),
           shape: RoundedRectangleBorder(
@@ -126,7 +126,17 @@ class AppTheme {
         height: 72,
         backgroundColor: AppColors.card,
         indicatorColor: AppColors.primarySoft,
+        indicatorShape: const StadiumBorder(),
         elevation: 0,
+        overlayColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.pressed)) {
+            return AppColors.primarySoft.withValues(alpha: 0.6);
+          }
+          if (states.contains(WidgetState.hovered)) {
+            return AppColors.primarySoft.withValues(alpha: 0.35);
+          }
+          return Colors.transparent;
+        }),
         iconTheme: WidgetStateProperty.resolveWith((states) {
           return IconThemeData(
             color: states.contains(WidgetState.selected)

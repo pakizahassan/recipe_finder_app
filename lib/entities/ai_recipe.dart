@@ -8,6 +8,7 @@ class AiRecipe {
     required this.calories,
     required this.servings,
     required this.chefTips,
+    this.imageUrl,
   });
 
   final String title;
@@ -18,4 +19,5 @@ class AiRecipe {
   final String calories;
   final String servings;
   final String chefTips;
+  final String? imageUrl;
 }

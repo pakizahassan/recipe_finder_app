@@ -10,10 +10,7 @@ class McpClient {
 
   Future<String> generateContent(String prompt) async {
     if (!AiConfig.isConfigured) {
-      throw const McpException(
-        'Gemini API key is missing. Run Flutter with '
-        '--dart-define=GEMINI_API_KEY=your_key',
-      );
+      throw const AiConfigurationException(AiConfig.missingApiKeyMessage);
     }
 
     final uri = Uri.parse(AiConfig.generateContentUrl);
@@ -29,6 +26,7 @@ class McpClient {
         'temperature': 0.7,
         'maxOutputTokens': 2048,
         'candidateCount': 1,
+        'responseMimeType': 'application/json',
       },
     });
 
@@ -58,9 +56,17 @@ class McpClient {
     if (candidates == null || candidates.isEmpty) {
       throw const McpException('AI returned no candidates.');
     }
-    final parts =
-        (candidates[0]['content'] as Map<String, dynamic>)['parts'] as List;
-    return parts[0]['text'] as String;
+    final content = candidates.first['content'] as Map<String, dynamic>?;
+    final parts = content?['parts'] as List?;
+    final text = parts?.isNotEmpty == true
+        ? (parts!.first as Map<String, dynamic>)['text'] as String?
+        : null;
+
+    if (text == null || text.trim().isEmpty) {
+      throw const McpException('AI returned an empty response.');
+    }
+
+    return text;
   }
 }
 

@@ -12,6 +12,8 @@ import 'package:recipe_finder_app/providers/auth_providers.dart';
 import 'package:recipe_finder_app/providers/profile_providers.dart';
 import 'package:recipe_finder_app/providers/navigation_provider.dart';
 import 'package:recipe_finder_app/providers/recipe_providers.dart';
+import 'package:recipe_finder_app/providers/ai_recipe_providers.dart';
+import 'package:recipe_finder_app/widgets/ai_recipe_mini_card.dart';
 import 'package:recipe_finder_app/widgets/category_chips.dart';
 import 'package:recipe_finder_app/widgets/featured_recipe_banner.dart';
 import 'package:recipe_finder_app/widgets/recipe_card.dart';
@@ -85,8 +87,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           Padding(
             padding: const EdgeInsets.only(right: AppSpacing.page),
             child: GestureDetector(
-              onTap: () =>
-                  ref.read(shellTabProvider.notifier).state = 4,
+              onTap: () => ref.read(shellTabProvider.notifier).state = 4,
               child: UserAvatar(
                 avatarUrl: avatarUrl,
                 displayName: firstName,
@@ -107,8 +108,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           final filteredRecipes = _selectedCategoryId == 'all'
               ? recipes
               : recipes
-                  .where(
-                      (r) => r.categoryId == _selectedCategoryId)
+                  .where((r) => r.categoryId == _selectedCategoryId)
                   .toList();
 
           return RefreshIndicator(
@@ -120,6 +120,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 parent: AlwaysScrollableScrollPhysics(),
               ),
               slivers: [
+                // ── Search bar ───────────────────────────────────
                 SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(
@@ -131,6 +132,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     ),
                   ),
                 ),
+
+                // ── Category chips ───────────────────────────────
                 SliverToBoxAdapter(
                   child: categoriesState.maybeWhen(
                     data: (categories) => CategoryChips(
@@ -144,6 +147,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
                 const SliverToBoxAdapter(
                     child: SizedBox(height: AppSpacing.xxl)),
+
+                // ── Featured recipe banner ───────────────────────
                 SliverToBoxAdapter(
                   child: featuredState.maybeWhen(
                     data: (recipe) => recipe == null
@@ -165,6 +170,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
                 const SliverToBoxAdapter(
                     child: SizedBox(height: AppSpacing.xxl)),
+
+                // ── Popular recipes section ──────────────────────
                 SliverToBoxAdapter(
                   child: SectionHeader(
                     title: 'Popular recipes',
@@ -202,11 +209,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               return RecipeCard(
                                 recipe: recipe,
                                 width: 190,
-                                onTap: () => context
-                                    .push('/recipe/${recipe.id}'),
+                                onTap: () =>
+                                    context.push('/recipe/${recipe.id}'),
                                 onFavoriteTap: () => ref
-                                    .read(recipesControllerProvider
-                                        .notifier)
+                                    .read(
+                                        recipesControllerProvider.notifier)
                                     .toggleFavorite(recipe),
                               );
                             },
@@ -215,6 +222,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       ),
                 const SliverToBoxAdapter(
                     child: SizedBox(height: AppSpacing.xxl)),
+
+                // ── My AI Recipes section ────────────────────────
+                const SliverToBoxAdapter(child: _AiRecipesSection()),
+                const SliverToBoxAdapter(
+                    child: SizedBox(height: AppSpacing.xxl)),
+
+                // ── Chef recommendation band ─────────────────────
                 const SliverToBoxAdapter(
                     child: _ChefRecommendationBand()),
                 const SliverToBoxAdapter(child: SizedBox(height: 24)),
@@ -226,6 +240,109 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 }
+
+// ── My AI Recipes Section ─────────────────────────────────────────────────────
+// Reads savedAiRecipesProvider and renders a horizontal scroll of mini cards.
+// Hides itself completely when there are no saved recipes yet.
+
+class _AiRecipesSection extends ConsumerWidget {
+  const _AiRecipesSection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final savedState = ref.watch(savedAiRecipesProvider);
+
+    return savedState.when(
+      // While loading, show nothing — avoids a flash of empty space
+      loading: () => const SizedBox.shrink(),
+
+      // On error, hide silently — this section is bonus content
+      error: (_, __) => const SizedBox.shrink(),
+
+      data: (recipes) {
+        // Nothing generated yet — hide the whole section
+        if (recipes.isEmpty) return const SizedBox.shrink();
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Section header — tapping "See all" jumps to AI Chef tab
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: AppSpacing.page),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: AppColors.primarySoft,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Icon(Icons.auto_awesome,
+                            color: AppColors.primary, size: 14),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'My AI Recipes',
+                        style: GoogleFonts.poppins(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                    ],
+                  ),
+                  GestureDetector(
+                    onTap: () => ref
+                        .read(shellTabProvider.notifier)
+                        .state = 3, // AI Chef tab
+                    child: Text(
+                      'See all',
+                      style: GoogleFonts.poppins(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: AppSpacing.md),
+
+            // Horizontal scrolling list of mini cards
+            SizedBox(
+              height: 220,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                physics: const BouncingScrollPhysics(),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.page),
+                itemCount: recipes.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 12),
+                itemBuilder: (context, index) {
+                  final recipe = recipes[index];
+                  return AiRecipeMiniCard(
+                    recipe: recipe,
+                    width: 160,
+                    // Hook up navigation here once you build the
+                    // AI recipe detail screen (Idea 4 in your guide)
+                    onTap: () {},
+                  );
+                },
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+// ── Chef Recommendation Band ──────────────────────────────────────────────────
 
 class _ChefRecommendationBand extends StatelessWidget {
   const _ChefRecommendationBand();

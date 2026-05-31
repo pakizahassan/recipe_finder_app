@@ -15,13 +15,33 @@ CREATE TABLE IF NOT EXISTS public.profiles (
 
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Owners can view own profile"   ON public.profiles FOR SELECT USING (auth.uid() = id);
-CREATE POLICY "Owners can create own profile" ON public.profiles FOR INSERT WITH CHECK (auth.uid() = id);
-CREATE POLICY "Owners can update own profile" ON public.profiles FOR UPDATE USING (auth.uid() = id);
+DROP POLICY IF EXISTS "Owners can view own profile" ON public.profiles;
+DROP POLICY IF EXISTS "Owners can create own profile" ON public.profiles;
+DROP POLICY IF EXISTS "Owners can update own profile" ON public.profiles;
+
+CREATE POLICY "Owners can view own profile"
+  ON public.profiles FOR SELECT
+  TO authenticated
+  USING ((select auth.uid()) = id);
+
+CREATE POLICY "Owners can create own profile"
+  ON public.profiles FOR INSERT
+  TO authenticated
+  WITH CHECK ((select auth.uid()) = id);
+
+CREATE POLICY "Owners can update own profile"
+  ON public.profiles FOR UPDATE
+  TO authenticated
+  USING ((select auth.uid()) = id)
+  WITH CHECK ((select auth.uid()) = id);
 
 -- Auto-create profile row whenever a user signs up
 CREATE OR REPLACE FUNCTION public.handle_new_user()
-RETURNS TRIGGER LANGUAGE plpgsql SECURITY DEFINER AS $$
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
 BEGIN
   INSERT INTO public.profiles (id, display_name)
   VALUES (
@@ -44,6 +64,14 @@ CREATE TABLE IF NOT EXISTS public.categories (
   name TEXT NOT NULL,
   icon TEXT DEFAULT 'Dining'
 );
+
+ALTER TABLE public.categories ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Categories viewable by everyone" ON public.categories;
+CREATE POLICY "Categories viewable by everyone"
+  ON public.categories FOR SELECT
+  TO anon, authenticated
+  USING (true);
 
 INSERT INTO public.categories (id, name, icon) VALUES
   ('breakfast',     'Breakfast',     'Morning'),
@@ -76,7 +104,12 @@ CREATE TABLE IF NOT EXISTS public.recipes (
 );
 
 ALTER TABLE public.recipes ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Recipes viewable by everyone" ON public.recipes FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Recipes viewable by everyone" ON public.recipes;
+CREATE POLICY "Recipes viewable by everyone"
+  ON public.recipes FOR SELECT
+  TO anon, authenticated
+  USING (true);
 
 INSERT INTO public.recipes
   (id, title, description, image_url, category_id, rating, cook_time_minutes, calories, ingredients, instructions, is_featured)
@@ -259,25 +292,63 @@ CREATE TABLE IF NOT EXISTS public.favorites (
 
 ALTER TABLE public.favorites ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Users can view own favorites"   ON public.favorites FOR SELECT USING (auth.uid() = user_id);
-CREATE POLICY "Users can insert own favorites" ON public.favorites FOR INSERT WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "Users can delete own favorites" ON public.favorites FOR DELETE USING (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Users can view own favorites" ON public.favorites;
+DROP POLICY IF EXISTS "Users can insert own favorites" ON public.favorites;
+DROP POLICY IF EXISTS "Users can delete own favorites" ON public.favorites;
+
+CREATE POLICY "Users can view own favorites"
+  ON public.favorites FOR SELECT
+  TO authenticated
+  USING ((select auth.uid()) = user_id);
+
+CREATE POLICY "Users can insert own favorites"
+  ON public.favorites FOR INSERT
+  TO authenticated
+  WITH CHECK ((select auth.uid()) = user_id);
+
+CREATE POLICY "Users can delete own favorites"
+  ON public.favorites FOR DELETE
+  TO authenticated
+  USING ((select auth.uid()) = user_id);
 
 -- ── 5. AVATAR STORAGE BUCKET ──────────────────────────────────
 INSERT INTO storage.buckets (id, name, public)
 VALUES ('avatars', 'avatars', true)
 ON CONFLICT (id) DO NOTHING;
 
+DROP POLICY IF EXISTS "Anyone can view avatars" ON storage.objects;
+DROP POLICY IF EXISTS "Authenticated users can upload avatars" ON storage.objects;
+DROP POLICY IF EXISTS "Authenticated users can update avatars" ON storage.objects;
+
 CREATE POLICY "Anyone can view avatars"
   ON storage.objects FOR SELECT
+  TO anon, authenticated
   USING (bucket_id = 'avatars');
 
 CREATE POLICY "Authenticated users can upload avatars"
   ON storage.objects FOR INSERT
-  WITH CHECK (bucket_id = 'avatars' AND auth.role() = 'authenticated');
+  TO authenticated
+  WITH CHECK (
+    bucket_id = 'avatars'
+    AND owner = (select auth.uid())
+  );
 
 CREATE POLICY "Authenticated users can update avatars"
   ON storage.objects FOR UPDATE
-  USING (bucket_id = 'avatars' AND auth.role() = 'authenticated');
+  TO authenticated
+  USING (
+    bucket_id = 'avatars'
+    AND owner = (select auth.uid())
+  )
+  WITH CHECK (
+    bucket_id = 'avatars'
+    AND owner = (select auth.uid())
+  );
+
+GRANT USAGE ON SCHEMA public TO anon, authenticated;
+GRANT SELECT ON public.categories TO anon, authenticated;
+GRANT SELECT ON public.recipes TO anon, authenticated;
+GRANT SELECT, INSERT, UPDATE ON public.profiles TO authenticated;
+GRANT SELECT, INSERT, DELETE ON public.favorites TO authenticated;
 
 -- ── Done! ──────────────────────────────────────────────────────

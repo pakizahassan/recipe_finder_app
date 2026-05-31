@@ -5,6 +5,7 @@
       "name": "Flutter Web (Chrome)",
       "request": "launch",
       "type": "dart",
+      "cwd": "${workspaceFolder}",
       "deviceId": "chrome",
       "program": "lib/main.dart",
       "toolArgs": [

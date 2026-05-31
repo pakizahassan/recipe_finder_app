@@ -1,5 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'package:recipe_finder_app/config/supabase_config.dart';
 import 'package:recipe_finder_app/entities/app_user.dart';
 import 'package:recipe_finder_app/repositories/auth_repository.dart';
 
@@ -34,6 +35,7 @@ class SupabaseAuthRepository implements AuthRepository {
       email: email,
       password: password,
       data: {'display_name': name},
+      emailRedirectTo: SupabaseConfig.emailRedirectTo,
     );
   }
 
