@@ -260,7 +260,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     if (lower.contains('network') || lower.contains('socketexception')) {
       return 'Check your internet connection.';
     }
-    if (lower.contains('redirect') || lower.contains('not allowed')) {
+    if (lower.contains('redirect_url') && lower.contains('not allowed')) {
       return 'Sign-up is temporarily unavailable. Please try again later.';
     }
     if (lower.contains('invalid') && lower.contains('email')) {
