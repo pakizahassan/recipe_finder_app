@@ -257,6 +257,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     if (lower.contains('rate limit') || lower.contains('too many requests')) {
       return 'Too many sign-up attempts. Please wait a few minutes and try again.';
     }
+    if (lower.contains('signups not allowed') || lower.contains('signup_disabled')) {
+      return 'Sign-ups are temporarily disabled. Please try again later.';
+    }
     if (lower.contains('network') || lower.contains('socketexception')) {
       return 'Check your internet connection.';
     }
