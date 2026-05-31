@@ -250,22 +250,26 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   }
 
   String _friendlyError(String raw) {
-    if (raw.contains('already registered') || raw.contains('already been registered')) {
+    final lower = raw.toLowerCase();
+    if (lower.contains('already registered') || lower.contains('already been registered')) {
       return 'This email is already in use.';
     }
-    if (raw.contains('network') || raw.contains('SocketException')) {
+    if (lower.contains('rate limit') || lower.contains('too many requests')) {
+      return 'Too many sign-up attempts. Please wait a few minutes and try again.';
+    }
+    if (lower.contains('network') || lower.contains('socketexception')) {
       return 'Check your internet connection.';
     }
-    if (raw.contains('redirect') || raw.contains('not allowed')) {
-      return 'Configuration error: redirect URL not allowed. Contact support.';
+    if (lower.contains('redirect') || lower.contains('not allowed')) {
+      return 'Sign-up is temporarily unavailable. Please try again later.';
     }
-    if (raw.contains('invalid') && raw.contains('email')) {
+    if (lower.contains('invalid') && lower.contains('email')) {
       return 'Enter a valid email address.';
     }
-    if (raw.contains('Password') || raw.contains('password')) {
+    if (lower.contains('password')) {
       return 'Password must be at least 6 characters.';
     }
-    return raw.isNotEmpty ? raw : 'Account creation failed. Please try again.';
+    return 'Account creation failed. Please try again.';
   }
 
   void _submit() {
