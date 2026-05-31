@@ -1,4 +1,4 @@
-# Recipe Finder App Project
+# Recipe Finder App 
 
 A Flutter recipe discovery app with onboarding, authentication, recipe browsing, search, favorites, and profile screens.
 
