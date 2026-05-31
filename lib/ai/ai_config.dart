@@ -69,3 +69,12 @@ class AiConfigurationException implements Exception {
   @override
   String toString() => message;
 }
+
+class AiConfigurationException implements Exception {
+  const AiConfigurationException(this.message);
+
+  final String message;
+
+  @override
+  String toString() => message;
+}
