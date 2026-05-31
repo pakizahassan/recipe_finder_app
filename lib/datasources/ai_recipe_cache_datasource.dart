@@ -33,4 +33,19 @@ class AiRecipeCacheDatasource {
       });
     } catch (_) {}
   }
+
+  Future<List<AiRecipeModel>> getAllRecipes() async {
+    try {
+      final rows = await _client
+          .from(_table)
+          .select()
+          .order('created_at', ascending: false)
+          .limit(20);
+      return rows
+          .map((r) => AiRecipeModel.fromJson(Map<String, dynamic>.from(r)))
+          .toList();
+    } catch (_) {
+      return [];
+    }
+  }
 }
