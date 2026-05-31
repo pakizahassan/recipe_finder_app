@@ -10,7 +10,15 @@ class SupabaseAuthRepository implements AuthRepository {
 
   @override
   Stream<AppUser?> authStateChanges() {
-    return client.auth.onAuthStateChange.map((event) => _mapUser(event.session?.user));
+    return client.auth.onAuthStateChange.map((event) {
+      final eventUser = event.session?.user;
+      // Auth events sometimes carry empty userMetadata. Fall back to the
+      // locally cached currentUser which always has the full metadata.
+      final resolved = (eventUser?.userMetadata?.containsKey('display_name') == true)
+          ? eventUser
+          : client.auth.currentUser;
+      return _mapUser(resolved ?? eventUser);
+    });
   }
 
   @override

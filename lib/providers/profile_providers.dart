@@ -25,15 +25,10 @@ class ProfileNotifier extends AsyncNotifier<UserProfile?> {
       );
     }
     try {
-      var profile = await repo.getProfile(user.id);
-      if (profile == null) {
-        profile = UserProfile(
-          id: user.id,
-          displayName: user.displayName,
-        );
-        await repo.upsertProfile(profile);
-      }
-      return profile;
+      final profile = await repo.getProfile(user.id);
+      // Never upsert here — auth events can carry empty metadata and would
+      // overwrite the user's real display name with the fallback 'Food Lover'.
+      return profile ?? UserProfile(id: user.id, displayName: user.displayName);
     } catch (_) {
       return UserProfile(id: user.id, displayName: user.displayName);
     }
