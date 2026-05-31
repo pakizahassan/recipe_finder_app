@@ -5,7 +5,8 @@ class AiRecipeCacheDatasource {
   AiRecipeCacheDatasource(this._client);
   final SupabaseClient _client;
 
-  static const _table = 'ai_recipes';
+  static const _cacheTable = 'ai_recipes';
+  static const _recipesTable = 'recipes';
 
   String _normalize(String name) =>
       name.toLowerCase().trim().replaceAll(RegExp(r'\s+'), ' ');
@@ -13,7 +14,7 @@ class AiRecipeCacheDatasource {
   Future<AiRecipeModel?> getCachedRecipe(String foodName) async {
     try {
       final rows = await _client
-          .from(_table)
+          .from(_cacheTable)
           .select()
           .eq('food_name_normalized', _normalize(foodName))
           .limit(1);
@@ -26,7 +27,7 @@ class AiRecipeCacheDatasource {
 
   Future<void> saveRecipe(String foodName, AiRecipeModel recipe) async {
     try {
-      await _client.from(_table).upsert({
+      await _client.from(_cacheTable).upsert({
         'food_name': foodName,
         'food_name_normalized': _normalize(foodName),
         ...recipe.toJson(),
@@ -34,18 +35,33 @@ class AiRecipeCacheDatasource {
     } catch (_) {}
   }
 
-  Future<List<AiRecipeModel>> getAllRecipes() async {
+  Future<void> saveToRecipesTable(AiRecipeModel recipe) async {
     try {
-      final rows = await _client
-          .from(_table)
-          .select()
-          .order('created_at', ascending: false)
-          .limit(20);
-      return rows
-          .map((r) => AiRecipeModel.fromJson(Map<String, dynamic>.from(r)))
-          .toList();
-    } catch (_) {
-      return [];
-    }
+      await _client.from(_recipesTable).upsert(
+        {
+          'title': recipe.title,
+          'image_url': recipe.imageUrl ?? '',
+          'rating': 0.0,
+          'cook_time_minutes': _parseMinutes(recipe.cookingTime),
+          'category_id': 'all',
+          'description': recipe.description,
+          'calories': _parseCalories(recipe.calories),
+          'ingredients': recipe.ingredients,
+          'instructions': recipe.steps,
+          'is_featured': false,
+        },
+        onConflict: 'title',
+      );
+    } catch (_) {}
+  }
+
+  static int _parseMinutes(String cookingTime) {
+    final match = RegExp(r'(\d+)').firstMatch(cookingTime);
+    return match != null ? int.tryParse(match.group(1)!) ?? 0 : 0;
+  }
+
+  static int _parseCalories(String calories) {
+    final match = RegExp(r'(\d+)').firstMatch(calories);
+    return match != null ? int.tryParse(match.group(1)!) ?? 0 : 0;
   }
 }

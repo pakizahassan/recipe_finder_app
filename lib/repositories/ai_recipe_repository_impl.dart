@@ -28,6 +28,7 @@ class AiRecipeRepositoryImpl implements AiRecipeRepository {
     final recipe = AiRecipeModel.fromJson(json);
 
     _cache?.saveRecipe(foodName, recipe).ignore();
+    _cache?.saveToRecipesTable(recipe).ignore();
 
     return recipe;
   }
