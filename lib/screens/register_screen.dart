@@ -217,9 +217,22 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   }
 
   String _friendlyError(String raw) {
-    if (raw.contains('already registered')) return 'This email is already in use.';
-    if (raw.contains('network')) return 'Check your internet connection.';
-    return 'Account creation failed. Please try again.';
+    if (raw.contains('already registered') || raw.contains('already been registered')) {
+      return 'This email is already in use.';
+    }
+    if (raw.contains('network') || raw.contains('SocketException')) {
+      return 'Check your internet connection.';
+    }
+    if (raw.contains('redirect') || raw.contains('not allowed')) {
+      return 'Configuration error: redirect URL not allowed. Contact support.';
+    }
+    if (raw.contains('invalid') && raw.contains('email')) {
+      return 'Enter a valid email address.';
+    }
+    if (raw.contains('Password') || raw.contains('password')) {
+      return 'Password must be at least 6 characters.';
+    }
+    return raw.isNotEmpty ? raw : 'Account creation failed. Please try again.';
   }
 
   void _submit() {
