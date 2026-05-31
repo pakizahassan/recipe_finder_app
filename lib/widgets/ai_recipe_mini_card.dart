@@ -56,9 +56,10 @@ class AiRecipeMiniCard extends StatelessWidget {
             ),
 
             // ── Text content ─────────────────────────────────────
-            Padding(
-              padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
-              child: Column(
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
+                child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // AI badge
@@ -86,7 +87,7 @@ class AiRecipeMiniCard extends StatelessWidget {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 5),
 
                   // Title
                   Text(
@@ -100,7 +101,7 @@ class AiRecipeMiniCard extends StatelessWidget {
                       height: 1.3,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 3),
 
                   // Description
                   Text(
@@ -113,7 +114,7 @@ class AiRecipeMiniCard extends StatelessWidget {
                       height: 1.4,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const Spacer(),
 
                   // Cooking time chip
                   if (recipe.cookingTime.isNotEmpty)
@@ -137,6 +138,7 @@ class AiRecipeMiniCard extends StatelessWidget {
                       ],
                     ),
                 ],
+                ),
               ),
             ),
           ],

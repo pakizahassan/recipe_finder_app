@@ -34,7 +34,8 @@ class AiRecipeRepositoryImpl implements AiRecipeRepository {
 
   @override
   Future<List<AiRecipe>> getAllRecipes() async {
-    if (_cache == null) return [];
-    return _cache.getAllRecipes();
+    final cache = _cache;
+    if (cache == null) return [];
+    return cache.getAllRecipes();
   }
 }
