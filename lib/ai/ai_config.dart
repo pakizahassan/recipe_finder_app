@@ -1,3 +1,10 @@
+import 'package:google_generative_ai/google_generative_ai.dart';
+
+/// Central place for Gemini configuration.
+///
+/// Values are read from compile-time defines:
+/// - GEMINI_API_KEY
+/// - GEMINI_MODEL
 class AiConfig {
   /*
   Local configuration template:
@@ -36,18 +43,9 @@ class AiConfig {
     defaultValue: _defaultModel,
   );
 
-  static String get geminiApiKey {
-    final key = _geminiApiKey.trim();
-    return key == 'your_key' ? '' : key;
-  }
+  static String get geminiApiKey => _geminiApiKey.trim();
 
-  static String get model {
-    final configuredModel = _model.trim();
-    return configuredModel.isEmpty ? _defaultModel : configuredModel;
-  }
-
-  static const String _baseUrl =
-      'https://generativelanguage.googleapis.com/v1beta/models';
+  static String get model => _model.trim().isEmpty ? _defaultModel : _model.trim();
 
   static bool get isConfigured => geminiApiKey.isNotEmpty;
 
@@ -57,7 +55,19 @@ class AiConfig {
       'you can also use --dart-define-from-file=config.json.';
 
   static String get generateContentUrl =>
-      '$_baseUrl/$model:generateContent';
+      'https://generativelanguage.googleapis.com/v1beta/models/$model:generateContent';
+
+  static GenerativeModel get modelInstance =>
+      GenerativeModel(model: model, apiKey: geminiApiKey);
+}
+
+class AiConfigurationException implements Exception {
+  const AiConfigurationException(this.message);
+
+  final String message;
+
+  @override
+  String toString() => message;
 }
 
 class AiConfigurationException implements Exception {

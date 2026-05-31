@@ -3,7 +3,9 @@ import 'package:recipe_finder_app/ai/recipe_image_service.dart';
 import 'package:recipe_finder_app/datasources/ai_recipe_cache_datasource.dart';
 import 'package:recipe_finder_app/models/ai_recipe_model.dart';
 import 'package:recipe_finder_app/entities/ai_recipe.dart';
-import 'package:recipe_finder_app/repositories/ai_recipe_repository.dart';
+import 'package:recipe_finder_app/models/ai_recipe_model.dart';
+
+import 'ai_recipe_repository.dart';
 
 class AiRecipeRepositoryImpl implements AiRecipeRepository {
   AiRecipeRepositoryImpl({

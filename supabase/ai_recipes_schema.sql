@@ -23,6 +23,11 @@ CREATE UNIQUE INDEX IF NOT EXISTS ai_recipes_normalized_name_idx
 -- Enable Row Level Security
 ALTER TABLE public.ai_recipes ENABLE ROW LEVEL SECURITY;
 
+-- Drop policies first so re-running this file never throws "already exists"
+DROP POLICY IF EXISTS "Public read ai_recipes"   ON public.ai_recipes;
+DROP POLICY IF EXISTS "Public insert ai_recipes" ON public.ai_recipes;
+DROP POLICY IF EXISTS "Public update ai_recipes" ON public.ai_recipes;
+
 -- Anyone (including anonymous users) can read cached recipes
 CREATE POLICY "Public read ai_recipes"
   ON public.ai_recipes FOR SELECT
