@@ -19,8 +19,8 @@ if [ -z "${GEMINI_API_KEY:-}" ]; then
 fi
 
 flutter build web --release \
-  --dart-define=GEMINI_API_KEY="${GEMINI_API_KEY}" \
-  --dart-define=GEMINI_MODEL="${GEMINI_MODEL:-gemini-2.5-flash}" \
-  ${APP_URL:+--dart-define=APP_URL="${APP_URL}"}
+  --dart-define=GEMINI_API_KEY=${GEMINI_API_KEY} \
+  --dart-define=GEMINI_MODEL=${GEMINI_MODEL:-gemini-2.5-flash} \
+  ${APP_URL:+--dart-define=APP_URL=${APP_URL}}
 
 echo "--- Build complete ---"

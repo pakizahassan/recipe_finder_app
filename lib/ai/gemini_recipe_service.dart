@@ -89,7 +89,7 @@ IMPORTANT: Return ONLY valid JSON. No markdown code fences, no extra text.
         throw const FormatException('Expected a JSON object');
       }
       return decoded;
-    } catch (e, st) {
+    } catch (e) {
       debugPrint('AI JSON parse error: $e');
       throw StateError(
           'Could not parse AI response as JSON.\n\nReceived:\n$raw');

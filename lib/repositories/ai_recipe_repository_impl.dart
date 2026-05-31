@@ -3,8 +3,6 @@ import 'package:recipe_finder_app/ai/recipe_image_service.dart';
 import 'package:recipe_finder_app/datasources/ai_recipe_cache_datasource.dart';
 import 'package:recipe_finder_app/models/ai_recipe_model.dart';
 import 'package:recipe_finder_app/entities/ai_recipe.dart';
-import 'package:recipe_finder_app/models/ai_recipe_model.dart';
-
 import 'ai_recipe_repository.dart';
 
 class AiRecipeRepositoryImpl implements AiRecipeRepository {
@@ -32,5 +30,12 @@ class AiRecipeRepositoryImpl implements AiRecipeRepository {
     _cache?.saveRecipe(foodName, recipe).ignore();
 
     return recipe;
+  }
+
+  @override
+  Future<List<AiRecipe>> getAllRecipes() async {
+    final cache = _cache;
+    if (cache == null) return [];
+    return cache.getAllRecipes();
   }
 }

@@ -41,6 +41,5 @@ final aiRecipeProvider =
 
 final savedAiRecipesProvider = FutureProvider<List<AiRecipe>>((ref) async {
   final repo = ref.watch(aiRecipeRepositoryProvider);
-  // Add a getAllRecipes method to your repository interface + impl
   return repo.getAllRecipes();
 });
