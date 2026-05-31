@@ -35,6 +35,20 @@ class AiRecipeCacheDatasource {
     } catch (_) {}
   }
 
+  Future<List<AiRecipeModel>> getAllRecipes() async {
+    try {
+      final rows = await _client
+          .from(_cacheTable)
+          .select()
+          .order('created_at', ascending: false);
+      return rows
+          .map((row) => AiRecipeModel.fromJson(Map<String, dynamic>.from(row)))
+          .toList();
+    } catch (_) {
+      return [];
+    }
+  }
+
   Future<void> saveToRecipesTable(AiRecipeModel recipe) async {
     try {
       await _client.from(_recipesTable).upsert(

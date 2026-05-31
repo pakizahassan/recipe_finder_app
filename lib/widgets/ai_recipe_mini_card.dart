@@ -48,10 +48,10 @@ class AiRecipeMiniCard extends StatelessWidget {
                     ? CachedNetworkImage(
                         imageUrl: recipe.imageUrl!,
                         fit: BoxFit.cover,
-                        placeholder: (_, __) => _ImagePlaceholder(),
-                        errorWidget: (_, __, ___) => _ImagePlaceholder(),
+                        placeholder: (_, __) => const _ImagePlaceholder(),
+                        errorWidget: (_, __, ___) => const _ImagePlaceholder(),
                       )
-                    : _ImagePlaceholder(),
+                    : const _ImagePlaceholder(),
               ),
             ),
 
@@ -151,6 +151,8 @@ class AiRecipeMiniCard extends StatelessWidget {
 // ── Fallback when there is no image ──────────────────────────────────────────
 
 class _ImagePlaceholder extends StatelessWidget {
+  const _ImagePlaceholder();
+
   @override
   Widget build(BuildContext context) {
     return Container(

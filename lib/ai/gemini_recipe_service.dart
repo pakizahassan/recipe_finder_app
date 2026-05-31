@@ -99,7 +99,7 @@ IMPORTANT: Return ONLY valid JSON. No markdown code fences, no extra text.
   /// Strips markdown code fences like ```json ... ``` if Gemini adds them.
   String _extractJson(String text) {
     final s = text.trim();
-    final fence = RegExp(r'```(?:json)?\\s*([\\s\\S]*?)\\s*```');
+    final fence = RegExp(r'```(?:json)?\s*([\s\S]*?)\s*```');
     final match = fence.firstMatch(s);
     if (match != null) return match.group(1)!.trim();
 
