@@ -35,7 +35,40 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
     ref.listen(authControllerProvider, (previous, next) {
       if (previous?.isLoading == true && next.hasValue) {
-        context.go('/app');
+        // signUp sent a confirmation email — user is NOT authenticated yet.
+        // Show dialog instead of navigating to /app.
+        showDialog<void>(
+          context: context,
+          barrierDismissible: false,
+          builder: (_) => AlertDialog(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            title: Text(
+              'Check your email',
+              style: GoogleFonts.poppins(
+                fontWeight: FontWeight.w700,
+                color: AppColors.textPrimary,
+              ),
+            ),
+            content: Text(
+              'We sent a confirmation link to ${_emailCtrl.text.trim()}.\n\nClick the link in the email to activate your account, then sign in.',
+              style: GoogleFonts.poppins(
+                fontSize: 13,
+                color: AppColors.textSecondary,
+                height: 1.5,
+              ),
+            ),
+            actions: [
+              FilledButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  context.go('/login');
+                },
+                child: const Text('Go to Sign In'),
+              ),
+            ],
+          ),
+        );
       }
       if (next.hasError) {
         ScaffoldMessenger.of(context).showSnackBar(
