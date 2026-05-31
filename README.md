@@ -270,14 +270,35 @@ The AI Chef screen needs a Gemini API key at Flutter build/run time:
 flutter run -d chrome --dart-define=GEMINI_API_KEY=your_key
 ```
 
+For local development, you can keep ignored values in `config.json` and run:
+
+```bash
+flutter run -d chrome --dart-define-from-file=config.json
+```
+
 For a release web build:
 
 ```bash
 flutter build web --release --dart-define=GEMINI_API_KEY=your_key
 ```
 
-On Vercel, add `GEMINI_API_KEY` as a project environment variable. The included
-`build_vercel.sh` script passes that value into Flutter during the web build.
+`config.json` is not loaded at runtime by the deployed web app, and it is not
+copied to `build/web`. Flutter Web compiles `String.fromEnvironment` values into
+the JavaScript bundle during `flutter build web`.
+
+On Vercel or another web host, add `GEMINI_API_KEY` as a build environment
+variable. The included `build_vercel.sh` script fails the build if the key is
+missing, then passes it into Flutter with:
+
+```bash
+flutter build web --release --dart-define=GEMINI_API_KEY="$GEMINI_API_KEY"
+```
+
+For GitHub Pages, inject the key in the build step before publishing `build/web`:
+
+```bash
+flutter build web --release --dart-define=GEMINI_API_KEY="$GEMINI_API_KEY"
+```
 
 Optional model override:
 

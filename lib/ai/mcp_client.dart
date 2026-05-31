@@ -10,10 +10,7 @@ class McpClient {
 
   Future<String> generateContent(String prompt) async {
     if (!AiConfig.isConfigured) {
-      throw const McpException(
-        'Gemini API key is missing. Run Flutter with '
-        '--dart-define-from-file=config.json',
-      );
+      throw const AiConfigurationException(AiConfig.missingApiKeyMessage);
     }
 
     final uri = Uri.parse(AiConfig.generateContentUrl);

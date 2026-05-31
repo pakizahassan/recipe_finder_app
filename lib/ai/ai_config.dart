@@ -21,13 +21,15 @@ class AiConfig {
   On Flutter Web, these values are compiled into the app bundle. Do not put
   server-only secrets here; restrict API keys in the provider console and use
   a backend proxy for secrets that must never be exposed to browsers.
+
+  Production web builds must inject the key at build time:
+
+  flutter build web --release --dart-define=GEMINI_API_KEY=your_key
   */
   static const String _defaultModel = 'gemini-2.5-flash';
 
-  static const String _geminiApiKey = String.fromEnvironment(
-    'GEMINI_API_KEY',
-    defaultValue: '',
-  );
+  static const String _geminiApiKey =
+      String.fromEnvironment('GEMINI_API_KEY');
 
   static const String _model = String.fromEnvironment(
     'GEMINI_MODEL',
@@ -49,6 +51,20 @@ class AiConfig {
 
   static bool get isConfigured => geminiApiKey.isNotEmpty;
 
+  static const String missingApiKeyMessage =
+      'Gemini API key is missing. Build or run Flutter with '
+      '--dart-define=GEMINI_API_KEY=YOUR_API_KEY. For local development, '
+      'you can also use --dart-define-from-file=config.json.';
+
   static String get generateContentUrl =>
       '$_baseUrl/$model:generateContent';
+}
+
+class AiConfigurationException implements Exception {
+  const AiConfigurationException(this.message);
+
+  final String message;
+
+  @override
+  String toString() => message;
 }

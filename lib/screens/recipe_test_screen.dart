@@ -46,8 +46,7 @@ class _RecipeTestScreenState extends State<RecipeTestScreen> {
     if (!AiConfig.isConfigured) {
       setState(() {
         _recipe = null;
-        _errorMessage =
-            'Missing GEMINI_API_KEY. Start Flutter with --dart-define-from-file=config.json.';
+        _errorMessage = AiConfig.missingApiKeyMessage;
       });
       return;
     }
